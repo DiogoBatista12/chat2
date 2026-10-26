@@ -44,6 +44,19 @@ Cada cliente informa um nome único e pode conversar com os demais. Comandos dis
 - `/users` lista os usuários conectados.
 - `/quit` encerra a conexão.
 
+## Tempos limite
+
+O servidor desconecta conexões paradas para não manter threads ocupadas indefinidamente:
+
+- **Nome de usuário:** o cliente tem 30 segundos após conectar para informar o nome.
+- **Inatividade:** depois de registrado, quem ficar 10 minutos sem enviar nada é desconectado e os demais recebem o aviso de saída.
+
+Os valores (em segundos) são configuráveis ao iniciar o servidor; `chat.idle=0` desativa o limite de inatividade:
+
+```bash
+java -Dchat.handshake=15 -Dchat.idle=300 -cp target/classes br.edu.chat.ChatServer
+```
+
 ## Compilar sem Maven
 
 Na pasta do projeto:
