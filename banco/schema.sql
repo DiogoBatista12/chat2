@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    chave_nome TEXT NOT NULL UNIQUE,
+    criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ultimo_acesso TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS mensagens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id),
+    conteudo TEXT NOT NULL CHECK (length(conteudo) BETWEEN 1 AND 2000),
+    enviada_em TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_mensagens_usuario ON mensagens(usuario_id);

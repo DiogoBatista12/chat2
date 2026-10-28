@@ -8,6 +8,7 @@
     <artifactId>chat-sockets</artifactId>
     <version>1.0.0</version>
     <name>Chat TCP com múltiplos clientes</name>
+    <description>Chat de console com sockets TCP, threads, mensagens privadas e banco SQLite.</description>
 
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
@@ -15,4 +16,32 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.53.4.0</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>banco</directory>
+                <targetPath>banco</targetPath>
+                <includes>
+                    <include>schema.sql</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>
