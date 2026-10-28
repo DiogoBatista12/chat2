@@ -1,0 +1,12 @@
+/build/
+/target/
+/out/
+/dados/
+/.idea/
+*.class
+*.log
+/lib/*.jar
+/lib/*.part
+*.db
+*.db-wal
+*.db-shm
