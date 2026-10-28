@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Set;
@@ -16,6 +17,11 @@ import java.util.concurrent.Executors;
 
 /** Servidor de chat TCP que atende cada conexão em uma thread própria. */
 public final class ChatServer {
+    /** Tempo para o cliente informar o nome após conectar (-Dchat.handshake=segundos). */
+    private static final int HANDSHAKE_TIMEOUT_MS = Integer.getInteger("chat.handshake", 30) * 1000;
+    /** Tempo sem enviar nada antes de ser desconectado (-Dchat.idle=segundos; 0 desativa). */
+    private static final int IDLE_TIMEOUT_MS = Integer.getInteger("chat.idle", 600) * 1000;
+
     private final int port;
     private final Set<ClientHandler> clients = ConcurrentHashMap.newKeySet();
     private final Set<String> nicknames = ConcurrentHashMap.newKeySet();
@@ -93,6 +99,8 @@ public final class ChatServer {
                          clientSocket.getInputStream(), StandardCharsets.UTF_8))) {
                 writer = new PrintWriter(new OutputStreamWriter(
                         clientSocket.getOutputStream(), StandardCharsets.UTF_8), true);
+                // Evita que uma conexão que não envia o nome ocupe uma thread para sempre.
+                clientSocket.setSoTimeout(HANDSHAKE_TIMEOUT_MS);
                 send("Informe seu nome de usuário:");
                 String requestedName = reader.readLine();
                 if (!validNickname(requestedName)) {
@@ -103,6 +111,9 @@ public final class ChatServer {
                     send("ERRO: esse nome já está em uso.");
                     return;
                 }
+
+                // Registrado: passa a valer o limite de inatividade (0 = sem limite).
+                clientSocket.setSoTimeout(IDLE_TIMEOUT_MS);
 
                 send("* Conectado. Digite /users para ver quem está online e /quit para sair.");
                 broadcast("* " + nickname + " entrou no chat.");
@@ -118,6 +129,14 @@ public final class ChatServer {
                     } else if (!trimmed.isEmpty()) {
                         broadcast("[" + nickname + "]: " + message);
                     }
+                }
+            } catch (SocketTimeoutException e) {
+                if (nickname == null) {
+                    send("ERRO: tempo esgotado para informar o nome de usuário.");
+                    System.out.println("Conexão descartada: nome não informado a tempo.");
+                } else {
+                    send("* Você foi desconectado por inatividade.");
+                    System.out.println("Desconectado por inatividade: " + nickname);
                 }
             } catch (IOException e) {
                 if (nickname != null) {
