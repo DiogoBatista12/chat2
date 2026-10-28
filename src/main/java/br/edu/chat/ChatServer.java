@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 public final class ChatServer {
     private static final int HANDSHAKE_TIMEOUT_MS = Integer.getInteger("chat.handshake", 30) * 1000;
     private static final int IDLE_TIMEOUT_MS = Integer.getInteger("chat.idle", 600) * 1000;
@@ -96,7 +95,6 @@ public final class ChatServer {
                          clientSocket.getInputStream(), StandardCharsets.UTF_8))) {
                 writer = new PrintWriter(new OutputStreamWriter(
                         clientSocket.getOutputStream(), StandardCharsets.UTF_8), true);
-                // Evita que uma conexão que não envia o nome ocupe uma thread para sempre.
                 clientSocket.setSoTimeout(HANDSHAKE_TIMEOUT_MS);
                 send("Informe seu nome de usuário:");
                 String requestedName = reader.readLine();
