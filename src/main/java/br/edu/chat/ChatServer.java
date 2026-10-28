@@ -15,13 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/** Servidor de chat TCP que atende cada conexão em uma thread própria. */
-public final class ChatServer {
-    /** Tempo para o cliente informar o nome após conectar (-Dchat.handshake=segundos). */
-    private static final int HANDSHAKE_TIMEOUT_MS = Integer.getInteger("chat.handshake", 30) * 1000;
-    /** Tempo sem enviar nada antes de ser desconectado (-Dchat.idle=segundos; 0 desativa). */
-    private static final int IDLE_TIMEOUT_MS = Integer.getInteger("chat.idle", 600) * 1000;
 
+public final class ChatServer {
+    private static final int HANDSHAKE_TIMEOUT_MS = Integer.getInteger("chat.handshake", 30) * 1000;
+    private static final int IDLE_TIMEOUT_MS = Integer.getInteger("chat.idle", 600) * 1000;
     private final int port;
     private final Set<ClientHandler> clients = ConcurrentHashMap.newKeySet();
     private final Set<String> nicknames = ConcurrentHashMap.newKeySet();
@@ -112,7 +109,6 @@ public final class ChatServer {
                     return;
                 }
 
-                // Registrado: passa a valer o limite de inatividade (0 = sem limite).
                 clientSocket.setSoTimeout(IDLE_TIMEOUT_MS);
 
                 send("* Conectado. Digite /users para ver quem está online e /quit para sair.");

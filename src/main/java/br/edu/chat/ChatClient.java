@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-/** Cliente de console: uma thread recebe mensagens enquanto a principal envia. */
 public final class ChatClient {
     private ChatClient() {}
 
